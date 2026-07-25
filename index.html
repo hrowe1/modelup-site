@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ModelUp — Fractional CFO &amp; Financial Modeling</title>
+<meta name="description" content="ModelUp builds investor-ready financial models, dashboards, and business plans. Fractional CFO advisory for founders who need smart money answers.">
+<style>
+  :root{
+    --paper:#f4f1ea;
+    --paper-dim:#ece8de;
+    --ink:#1d2533;      /* pulled from the ModelUp logo */
+    --ink-60:#5b6472;
+    --rule:#c9c3b4;
+    --red:#b5382a;      /* ledger red */
+    --mono:"SF Mono",ui-monospace,"IBM Plex Mono",Menlo,Consolas,monospace;
+    --serif:Georgia,"Times New Roman",serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;border-radius:0 !important}
+  html{scroll-behavior:smooth;scroll-snap-type:y mandatory;scroll-padding-top:60px}
+
+  /* full-viewport snap frames */
+  .panel{
+    min-height:calc(100svh - 60px);
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  @supports not (height:100svh){.panel{min-height:calc(100vh - 60px)}}
+  body{
+    font-family:var(--serif);
+    background:var(--paper);color:var(--ink);line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  img{display:block}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
+  .red{color:var(--red)}
+
+  .btn{
+    display:inline-block;font-family:var(--mono);font-size:.78rem;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;padding:16px 28px;cursor:pointer;
+    border:1px solid var(--ink);background:transparent;color:var(--ink);
+    transition:background .12s,color .12s;
+  }
+  .btn:hover{background:var(--ink);color:var(--paper)}
+  .btn-solid{background:var(--ink);color:var(--paper)}
+  .btn-solid:hover{background:var(--red);border-color:var(--red)}
+
+  /* ---------- MASTHEAD ---------- */
+  header{
+    position:sticky;top:0;z-index:50;background:var(--paper);
+    border-bottom:1px solid var(--ink);
+  }
+  nav{display:flex;align-items:stretch;justify-content:space-between;height:60px}
+  .brand{display:flex;align-items:center;gap:12px;padding-right:24px}
+  .brand img{height:34px;width:auto}
+  .brand span{font-family:var(--serif);font-weight:700;font-size:1.15rem;letter-spacing:.02em}
+  .nav-links{display:flex;align-items:stretch}
+  .nav-links a{
+    display:flex;align-items:center;padding:0 22px;border-left:1px solid var(--rule);
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  }
+  .nav-links a:hover{background:var(--ink);color:var(--paper)}
+  .nav-links a.cta{background:var(--red);color:var(--paper);border-left:1px solid var(--ink)}
+  .nav-links a.cta:hover{background:var(--ink)}
+  @media(max-width:860px){.nav-links a:not(.cta){display:none}}
+
+  /* ---------- HERO ---------- */
+  .hero{border-bottom:1px solid var(--ink);justify-content:flex-start}
+  .hero > .wrap{flex:1;display:flex;width:100%}
+  .hero-grid{display:grid;grid-template-columns:7fr 5fr;flex:1}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+  .hero-copy{padding:36px 48px 36px 0;display:flex;flex-direction:column;justify-content:center}
+  @media(max-width:900px){.hero-copy{padding:48px 0 40px}}
+  .kicker{display:flex;gap:18px;align-items:baseline;margin-bottom:28px}
+  .kicker .rule{flex:1;height:1px;background:var(--rule)}
+  h1{
+    font-size:clamp(2.6rem,5.6vw,4.2rem);line-height:1.02;font-weight:600;
+    letter-spacing:-.015em;margin-bottom:26px;
+  }
+  h1 .u{box-shadow:inset 0 -0.12em var(--paper), inset 0 -0.22em var(--red)}
+  .lede{font-size:1.12rem;color:var(--ink-60);max-width:32em;margin-bottom:36px}
+  .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+  .hero-fine{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-60)}
+  .hero-fine b{color:var(--red);font-weight:600}
+
+  /* hero figure — flat ledger chart */
+  .fig{
+    border-left:1px solid var(--ink);
+    display:flex;flex-direction:column;justify-content:flex-end;
+  }
+  @media(max-width:900px){.fig{border-left:none;border-top:1px solid var(--ink)}}
+  .fig-head{
+    display:flex;justify-content:space-between;padding:18px 24px;
+    border-bottom:1px solid var(--rule);
+  }
+  .fig-chart{padding:26px 24px 8px}
+  .fig-rows{border-top:1px solid var(--rule);margin-top:18px}
+  .fig-row{
+    display:flex;justify-content:space-between;padding:12px 24px;
+    border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:.78rem;
+  }
+  .fig-row:last-child{border-bottom:none}
+  .fig-row .k{color:var(--ink-60);letter-spacing:.1em;text-transform:uppercase;font-size:.68rem}
+  .fig-row .v{font-weight:600}
+
+  /* ---------- CLIENT BAND (first frame) ---------- */
+  .clients{background:var(--ink);color:var(--paper);border-bottom:1px solid var(--ink)}
+  .clients .wrap{display:flex;align-items:center;flex-wrap:wrap}
+  .clients .label{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+    color:#8b94a3;padding:20px 32px 20px 0;border-right:1px solid #39424f;
+    flex:none;
+  }
+  .logo-row{display:flex;align-items:center;flex-wrap:wrap;flex:1;justify-content:space-around;gap:8px;padding:14px 0}
+  .logo-row img{
+    height:30px;width:auto;max-width:150px;object-fit:contain;
+    filter:brightness(1.04);opacity:.92;margin:8px 14px;
+  }
+  .logo-row img.tall{height:44px}
+  .logo-row img[alt*="Backroom"]{filter:brightness(1.65) contrast(1.05)}
+  .logo-row img[alt*="Smoke"]{filter:brightness(1.3)}
+  /* ---------- SECTION SCAFFOLD ---------- */
+  section{border-bottom:1px solid var(--ink)}
+  section.panel{padding:36px 0}
+  section.panel > .wrap{width:100%;flex:1;display:flex;flex-direction:column}
+  .sec-body{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .folio{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-top:1px solid var(--rule);padding-top:16px;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-60);
+  }
+  .folio a{color:var(--ink)}
+  .folio a:hover{color:var(--red)}
+  .sec-body.record-grid{display:grid;align-content:stretch}
+  .sec-head{
+    display:grid;grid-template-columns:180px 1fr auto;gap:24px;align-items:baseline;
+    padding:0 0 28px;border-bottom:1px solid var(--rule);
+  }
+  @media(max-width:900px){section.panel{padding:32px 0}}
+  @media(max-width:700px){.sec-head{grid-template-columns:auto 1fr}}
+  .sec-no{font-family:var(--mono);font-size:.8rem;color:var(--red);letter-spacing:.14em}
+  .sec-head h2{font-size:clamp(1.5rem,3vw,2.1rem);font-weight:600;letter-spacing:-.01em}
+  .sec-head .aside{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-60)}
+  @media(max-width:700px){.sec-head .aside{display:none}}
+
+  /* services — index list */
+  .svc{display:grid;grid-template-columns:1fr 1fr}
+  @media(max-width:800px){.svc{grid-template-columns:1fr}}
+  .svc-item{padding:38px 40px 42px 0;border-bottom:1px solid var(--rule);display:flex;gap:22px}
+  .svc-item:nth-child(odd){border-right:1px solid var(--rule);padding-right:40px}
+  .svc-item:nth-child(even){padding-left:40px;padding-right:0}
+  .svc-item:nth-last-child(-n+2){border-bottom:none}
+  @media(max-width:800px){
+    .svc-item{border-right:none !important;padding:30px 0 !important}
+    .svc-item:nth-last-child(2){border-bottom:1px solid var(--rule)}
+  }
+  .svc-no{font-family:var(--mono);font-size:.75rem;color:var(--red);padding-top:6px;flex:none}
+  .svc-item h3{font-size:1.2rem;font-weight:600;margin-bottom:8px}
+  .svc-item p{font-size:.95rem;color:var(--ink-60)}
+
+  /* work — figures */
+  .work-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+  @media(max-width:860px){.work-grid{grid-template-columns:1fr}}
+  .work{border-right:1px solid var(--rule);padding:36px 32px 40px 0}
+  .work + .work{padding-left:32px}
+  .work:last-child{border-right:none;padding-right:0}
+  @media(max-width:860px){
+    .work{border-right:none;border-bottom:1px solid var(--rule);padding:30px 0 !important}
+    .work:last-child{border-bottom:none}
+  }
+  .work{cursor:pointer}
+  .work:hover .frame{border-color:var(--red)}
+  .work:hover h3::after{color:var(--red)}
+  .work h3::after{content:" +";font-family:var(--mono);font-size:.8em;color:var(--ink-60)}
+  .work .cap{display:flex;justify-content:space-between;margin-bottom:14px}
+
+  /* ---------- LIGHTBOX ---------- */
+  dialog.sheet{
+    border:1px solid var(--ink);background:var(--paper);color:var(--ink);
+    padding:0;width:min(1060px,92vw);max-height:88svh;
+    margin:auto; /* the global reset kills the UA's centering — restore it */
+  }
+  dialog.sheet::backdrop{background:rgba(29,37,51,.82)}
+  .sheet-head{
+    display:flex;justify-content:space-between;align-items:center;
+    border-bottom:1px solid var(--ink);padding:14px 20px;
+    position:sticky;top:0;background:var(--paper);z-index:2;
+  }
+  .sheet-head .t{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
+  .sheet-head .t b{color:var(--red);font-weight:600}
+  .sheet-close{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    background:none;border:1px solid var(--ink);color:var(--ink);padding:8px 14px;cursor:pointer;
+  }
+  .sheet-close:hover{background:var(--red);border-color:var(--red);color:var(--paper)}
+  .sheet-body{padding:20px;overflow-y:auto;max-height:calc(88svh - 64px)}
+  .sheet-body figure{margin:0 0 22px}
+  .sheet-body figure:last-child{margin-bottom:0}
+  .sheet-body figcaption{
+    font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-60);margin-bottom:8px;
+  }
+  .sheet-body img{width:100%;height:auto;border:1px solid var(--rule)}
+
+  /* email-gated model download */
+  .gate{border-top:1px solid var(--ink);margin-top:24px;padding-top:18px}
+  .gate .gate-label{
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+    margin-bottom:12px;
+  }
+  .gate .gate-label b{color:var(--red);font-weight:600}
+  .gate form{display:flex;gap:10px;padding:0;align-content:start}
+  @media(max-width:560px){.gate form{flex-direction:column}}
+  .gate input[type=email]{
+    flex:1;margin:0;padding:12px;font-size:.95rem;font-family:var(--serif);
+    background:var(--paper);border:1px solid var(--ink);color:var(--ink);
+  }
+  .gate input[type=email]::placeholder{color:var(--ink-60)}
+  .gate button{
+    font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;background:var(--ink);color:var(--paper);
+    border:1px solid var(--ink);padding:12px 20px;cursor:pointer;white-space:nowrap;
+  }
+  .gate button:hover{background:var(--red);border-color:var(--red)}
+  .gate .files{display:none;gap:22px;flex-wrap:wrap;align-items:baseline}
+  .gate.unlocked form{display:none}
+  .gate.unlocked .files{display:flex}
+  .gate .files a{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+    border-bottom:2px solid var(--red);padding-bottom:2px;
+  }
+  .gate .files a:hover{color:var(--red)}
+  .gate .files .ok{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-60)}
+  .work .frame{border:1px solid var(--ink);padding:14px;background:#fbf9f4}
+  .work h3{font-size:1.05rem;font-weight:600;margin:16px 0 6px}
+  .work p{font-size:.88rem;color:var(--ink-60)}
+
+  /* record band */
+  .record{background:var(--paper-dim)}
+  .record-grid{display:grid;grid-template-columns:1.15fr .85fr}
+  @media(max-width:820px){.record-grid{grid-template-columns:1fr}}
+  .record-copy{padding:52px 48px 56px 0}
+  @media(max-width:820px){.record-copy{padding:40px 0}}
+  .record-copy h2{font-size:clamp(1.5rem,3vw,2.1rem);margin-bottom:18px;letter-spacing:-.01em}
+  .record-copy p{color:var(--ink-60);margin-bottom:14px;max-width:36em}
+  .tally{border-left:1px solid var(--ink)}
+  @media(max-width:820px){.tally{border-left:none;border-top:1px solid var(--ink)}}
+  .tally-row{display:flex;justify-content:space-between;align-items:baseline;padding:22px 0 22px 40px;border-bottom:1px solid var(--rule)}
+  .tally-row:last-child{border-bottom:none}
+  @media(max-width:820px){.tally-row{padding-left:0}}
+  .tally-row .n{font-size:2rem;font-weight:600}
+  .tally-row .l{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-60);text-align:right}
+
+  /* pricing — rate card */
+  .rate{width:100%;border-collapse:collapse}
+  .rate th,.rate td{
+    text-align:left;vertical-align:top;padding:26px 22px;
+    border-bottom:1px solid var(--rule);
+  }
+  .rate th{border-bottom:1px solid var(--ink)}
+  .rate td:first-child,.rate th:first-child{padding-left:0}
+  .rate td:last-child,.rate th:last-child{padding-right:0;text-align:right}
+  .rate th{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-60);font-weight:600}
+  .rate .tier-name{font-size:1.15rem;font-weight:600;white-space:nowrap}
+  .rate .tier-name .pop{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-top:6px}
+  .rate .price{font-size:1.6rem;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .rate .inc{font-size:.9rem;color:var(--ink-60);max-width:34em}
+  .rate tr:last-child td{border-bottom:none}
+  .rate .rowlink{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;border-bottom:2px solid var(--red);padding-bottom:2px;white-space:nowrap}
+  .rate .rowlink:hover{color:var(--red)}
+  .rate-note{padding:18px 0 0;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-60)}
+  @media(max-width:760px){
+    .rate thead{display:none}
+    .rate,.rate tbody,.rate tr,.rate td{display:block}
+    .rate td{border-bottom:none;padding:6px 0}
+    .rate tr{border-bottom:1px solid var(--rule);padding:22px 0}
+    .rate td:last-child{text-align:left;padding-bottom:10px}
+  }
+
+  /* ---------- INQUIRY ---------- */
+  .inquiry{background:var(--ink);color:var(--paper);border-bottom:none;padding-bottom:0 !important}
+  section.inquiry.panel > .wrap{
+    flex:1;display:grid;grid-template-columns:5fr 7fr;align-content:center;
+  }
+  @media(max-width:860px){section.inquiry.panel > .wrap{grid-template-columns:1fr}}
+  @media(max-width:860px){.inq-grid{grid-template-columns:1fr}}
+  .inq-copy{padding:40px 48px 40px 0;border-right:1px solid #39424f}
+  @media(max-width:860px){.inq-copy{padding:24px 0 8px;border-right:none}}
+  .inq-copy h2{font-size:clamp(1.7rem,3.4vw,2.4rem);margin:18px 0;letter-spacing:-.01em}
+  .inq-copy p{color:#9aa3b1;max-width:30em;margin-bottom:22px}
+  .inq-list{list-style:none;border-top:1px solid #39424f}
+  .inq-list li{
+    padding:13px 0;border-bottom:1px solid #39424f;font-size:.95rem;
+    display:flex;gap:14px;align-items:baseline;
+  }
+  .inq-list .tick{font-family:var(--mono);color:var(--red);font-size:.8rem}
+  form{padding:40px 0 40px 48px;display:grid;gap:20px;align-content:center}
+  @media(max-width:860px){form{padding:24px 0 44px}}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:560px){.frow{grid-template-columns:1fr}}
+  label{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:#8b94a3}
+  input,select,textarea{
+    width:100%;margin-top:8px;padding:13px 12px;font-size:.98rem;font-family:var(--serif);
+    background:transparent;border:1px solid #39424f;color:var(--paper);
+  }
+  select{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8b94a3 50%),linear-gradient(135deg,#8b94a3 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+  select option{color:var(--ink)}
+  input::placeholder,textarea::placeholder{color:#5b6472}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--paper)}
+  .submit{
+    font-family:var(--mono);font-size:.78rem;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;background:var(--red);color:var(--paper);
+    border:1px solid var(--red);padding:18px;cursor:pointer;
+  }
+  .submit:hover{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .inq-fine{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:#8b94a3}
+  .inq-fine a{border-bottom:1px solid var(--red)}
+
+  footer{background:var(--ink);color:#8b94a3;border-top:1px solid #39424f;margin-top:auto}
+  footer .wrap{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:26px 24px;
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+  }
+  footer a:hover{color:var(--paper)}
+  /* ---------- MOBILE: hard one-screen frames ---------- */
+  @media(max-width:700px){
+    .panel{height:calc(100svh - 60px);min-height:0;overflow:hidden}
+    section.panel{padding:18px 0}
+    .folio{padding-top:10px;font-size:.58rem;letter-spacing:.1em}
+
+    /* hero */
+    .hero-copy{padding:10px 0}
+    .kicker{margin-bottom:12px}
+    .kicker .rule,.kicker span:nth-child(3){display:none}
+    h1{font-size:clamp(1.9rem,9vw,2.4rem);margin-bottom:14px}
+    .lede{font-size:.95rem;margin-bottom:20px}
+    .hero-ctas{margin-bottom:10px;gap:8px}
+    .btn{padding:12px 16px;font-size:.68rem}
+    .hero-fine{font-size:.58rem}
+    .fig{display:none}
+
+    /* client band — roomy two-row grid, no scrunch */
+    .clients .label{border-right:none;padding:12px 0 2px;width:100%;text-align:center;letter-spacing:.3em}
+    .logo-row{display:grid;grid-template-columns:repeat(3,1fr);justify-items:center;align-items:center;gap:14px 10px;padding:6px 0 14px}
+    .logo-row img,.logo-row img.tall{height:20px;max-width:96px;margin:0}
+    .logo-row img:nth-child(4){grid-column:1 / 2}
+    .logo-row img:nth-child(4),.logo-row img:nth-child(5){transform:translateX(50%)}
+
+    /* section scaffolding */
+    .sec-head{padding-bottom:12px;gap:12px}
+    .sec-head h2{font-size:1.3rem}
+    .sec-no{font-size:.66rem}
+
+    /* services */
+    .svc-item{padding:13px 0 !important;gap:12px}
+    .svc-item h3{font-size:.98rem;margin-bottom:3px}
+    .svc-item p{font-size:.8rem;line-height:1.45}
+    .svc-no{font-size:.62rem;padding-top:4px}
+
+    /* work — compact index rows, charts live in the pop-ups */
+    .work .frame{display:none}
+    .work{padding:12px 0 !important}
+    .work .cap{margin-bottom:0}
+    .work h3{margin:6px 0 3px;font-size:.98rem}
+    .work p{font-size:.8rem;line-height:1.45}
+
+    /* record */
+    .record-copy{padding:8px 0}
+    .record-copy h2{font-size:1.2rem;margin-bottom:10px}
+    .record-copy p{font-size:.85rem;margin-bottom:8px}
+    .record-copy .btn{margin-top:2px !important}
+    .tally-row{padding:9px 0}
+    .tally-row .n{font-size:1.25rem}
+    .tally-row .l{font-size:.6rem}
+
+    /* rate card */
+    .rate tr{padding:12px 0}
+    .rate td{padding:2px 0}
+    .rate .tier-name{font-size:.98rem}
+    .rate .tier-name .pop{margin-top:2px}
+    .rate .price{font-size:1.15rem}
+    .rate .inc{font-size:.78rem;line-height:1.45}
+    .rate .rowlink{font-size:.62rem}
+    .rate-note{padding-top:10px;font-size:.58rem}
+
+    /* inquiry */
+    .inq-copy{padding:4px 0 2px}
+    .inq-copy h2{font-size:1.2rem;margin:6px 0}
+    .inq-copy p{font-size:.85rem;margin-bottom:6px}
+    .inq-list{display:none}
+    form{padding:6px 0 14px;gap:9px}
+    .frow{gap:9px}
+    label{font-size:.56rem}
+    input,select,textarea{padding:9px 10px;margin-top:4px;font-size:.9rem}
+    textarea{height:64px}
+    .submit{padding:12px}
+    .inq-fine{font-size:.56rem}
+    footer .wrap{padding:12px 24px;font-size:.56rem;justify-content:center}
+    footer .wrap span:nth-child(2){display:none}
+  }
+
+  /* short phones (SE / 8 class): shave the two densest frames further */
+  @media(max-width:700px) and (max-height:700px){
+    .rate tr{padding:8px 0}
+    .rate .inc{font-size:.72rem;line-height:1.35}
+    .rate .price{font-size:1.05rem}
+    .rate-note{display:none}
+    .inq-copy p{display:none}
+    .inq-copy h2{font-size:1.1rem}
+    form{gap:7px}
+    textarea{height:48px}
+    .inq-fine{display:none}
+    .submit{padding:10px}
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#top">
+        <img src="assets/modelup-t.png" alt="ModelUp logo">
+        <span>ModelUp</span>
+      </a>
+      <div class="nav-links">
+        <a href="#services">Services</a>
+        <a href="#work">Work</a>
+        <a href="#pricing">Rates</a>
+        <a class="cta" href="#contact">Free Consult</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <!-- HERO -->
+  <div class="hero panel">
+    <div class="wrap"><div class="hero-grid">
+      <div class="hero-copy">
+        <div class="kicker">
+          <span class="mono red">Fractional CFO · Financial Modeling</span>
+          <span class="rule"></span>
+          <span class="mono" style="color:var(--ink-60)">Est. FP&amp;A ×10 yrs</span>
+        </div>
+        <h1>Where smart models meet <span class="u">smart money.</span></h1>
+        <p class="lede">Investor-ready financial models, dashboards, and business plans for founders — built with a decade of FP&amp;A discipline from oil &amp; gas to hospitality.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-solid" href="#contact">Book a free 30-min consult</a>
+          <a class="btn" href="#work">See client work</a>
+        </div>
+        <p class="hero-fine"><b>No pitch, no pressure.</b> &nbsp;EN · ES · FR</p>
+      </div>
+      <aside class="fig" aria-label="Sample forecast figure">
+        <div class="fig-head">
+          <span class="mono">Fig. 01 — Revenue forecast</span>
+          <span class="mono" style="color:var(--ink-60)">FY26</span>
+        </div>
+        <div class="fig-chart">
+          <svg viewBox="0 0 400 190" width="100%" role="img" aria-label="Forecast versus actuals line chart">
+            <g stroke="#c9c3b4" stroke-width="1">
+              <line x1="0" y1="45" x2="400" y2="45"/><line x1="0" y1="90" x2="400" y2="90"/><line x1="0" y1="135" x2="400" y2="135"/><line x1="0" y1="180" x2="400" y2="180"/>
+            </g>
+            <path d="M0,168 L57,160 L114,148 L171,138 L228,118 L285,92 L342,60 L400,24" fill="none" stroke="#1d2533" stroke-width="2.5"/>
+            <path d="M0,170 L57,164 L114,158 L171,150 L228,144 L285,134 L342,126 L400,114" fill="none" stroke="#b5382a" stroke-width="1.8" stroke-dasharray="1 5" stroke-linecap="round"/>
+            <circle cx="342" cy="60" r="3.5" fill="#b5382a"/>
+            <text x="330" y="46" font-family="Menlo,monospace" font-size="10" fill="#b5382a">+32%</text>
+          </svg>
+        </div>
+        <div class="fig-rows">
+          <div class="fig-row"><span class="k">ARR</span><span class="v">$1,840,000</span></div>
+          <div class="fig-row"><span class="k">Runway</span><span class="v">19 mo</span></div>
+          <div class="fig-row"><span class="k">Gross margin</span><span class="v">61.0%</span></div>
+        </div>
+      </aside>
+    </div></div>
+
+    <!-- CLIENT BAND -->
+    <div class="clients">
+      <div class="wrap">
+      <span class="label">Clients</span>
+      <div class="logo-row">
+        <img src="assets/sb-t.png" alt="Smoke &amp; Bitters">
+        <img src="assets/neet-t.png" alt="NEET Sheets" class="tall">
+        <img src="assets/lastnight-white.png" alt="Last Night">
+        <img src="assets/backroom-t.png" alt="The Backroom Bar and Barber" class="tall">
+        <img src="assets/vessel-t.png" alt="Vessel">
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services" class="panel">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-no">№ 01</span>
+        <h2>Services</h2>
+        <span class="aside">A CFO's toolkit, without the payroll</span>
+      </div>
+      <div class="sec-body">
+      <div class="svc">
+        <div class="svc-item">
+          <span class="svc-no">1.1</span>
+          <div>
+            <h3>Financial models &amp; dashboards</h3>
+            <p>Custom forecasts built around how your business actually operates — dashboards that turn assumptions into answers.</p>
+          </div>
+        </div>
+        <div class="svc-item">
+          <span class="svc-no">1.2</span>
+          <div>
+            <h3>Fractional CFO &amp; advisory</h3>
+            <p>Retained guidance on cap tables, term sheets, investor negotiations, and financing. Board-level judgment, on call.</p>
+          </div>
+        </div>
+        <div class="svc-item">
+          <span class="svc-no">1.3</span>
+          <div>
+            <h3>Model training</h3>
+            <p>One-on-one sessions on the fundamentals of financial modeling — so you own your numbers, not just the file.</p>
+          </div>
+        </div>
+        <div class="svc-item">
+          <span class="svc-no">1.4</span>
+          <div>
+            <h3>Business plans &amp; pitch support</h3>
+            <p>Your model translated into the narrative investors expect — presentations that make the ask obvious.</p>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="folio"><span>№ 01 / 05 — Services</span><a href="#work">Next — Client work ↓</a></div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work" class="panel">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-no">№ 02</span>
+        <h2>Client work</h2>
+        <span class="aside">Proof, not promises</span>
+      </div>
+      <div class="sec-body">
+      <div class="work-grid">
+        <div class="work" data-sheet="sheet-neet" role="button" tabindex="0" aria-haspopup="dialog">
+          <div class="cap"><span class="mono">Fig. 02</span><span class="mono" style="color:var(--ink-60)">E-commerce</span></div>
+          <div class="frame">
+            <svg viewBox="0 0 300 150" width="100%" role="img" aria-label="NEET Sheets revenue by channel">
+              <g stroke="#c9c3b4" stroke-width="1"><line x1="0" y1="110" x2="300" y2="110"/><line x1="0" y1="70" x2="300" y2="70"/><line x1="0" y1="30" x2="300" y2="30"/></g>
+              <g>
+                <rect x="16" y="104" width="20" height="42" fill="#1d2533"/><rect x="40" y="92" width="20" height="54" fill="#b5382a"/>
+                <rect x="82" y="94" width="20" height="52" fill="#1d2533"/><rect x="106" y="76" width="20" height="70" fill="#b5382a"/>
+                <rect x="148" y="80" width="20" height="66" fill="#1d2533"/><rect x="172" y="56" width="20" height="90" fill="#b5382a"/>
+                <rect x="214" y="66" width="20" height="80" fill="#1d2533"/><rect x="238" y="34" width="20" height="112" fill="#b5382a"/>
+              </g>
+              <line x1="0" y1="146" x2="300" y2="146" stroke="#1d2533" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <h3>NEET Sheets</h3>
+          <p>Multi-channel forecast with assumption-driven inputs for DTC and wholesale.</p>
+        </div>
+        <div class="work" data-sheet="sheet-lastnight" role="button" tabindex="0" aria-haspopup="dialog">
+          <div class="cap"><span class="mono">Fig. 03</span><span class="mono" style="color:var(--ink-60)">Nightlife</span></div>
+          <div class="frame">
+            <svg viewBox="0 0 300 150" width="100%" role="img" aria-label="Last Night cash runway scenarios">
+              <g stroke="#c9c3b4" stroke-width="1"><line x1="0" y1="110" x2="300" y2="110"/><line x1="0" y1="70" x2="300" y2="70"/><line x1="0" y1="30" x2="300" y2="30"/></g>
+              <path d="M12,132 C90,122 170,86 288,26" fill="none" stroke="#b5382a" stroke-width="2.2"/>
+              <path d="M12,132 C90,128 170,112 288,78" fill="none" stroke="#1d2533" stroke-width="1.8"/>
+              <path d="M12,132 C90,134 170,130 288,120" fill="none" stroke="#5b6472" stroke-width="1.5" stroke-dasharray="2 5"/>
+              <circle cx="288" cy="26" r="3" fill="#b5382a"/>
+              <line x1="0" y1="146" x2="300" y2="146" stroke="#1d2533" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <h3>Last Night</h3>
+          <p>Scenario planning — base, upside, and stress cases on one dashboard.</p>
+        </div>
+        <div class="work" data-sheet="sheet-backroom" role="button" tabindex="0" aria-haspopup="dialog">
+          <div class="cap"><span class="mono">Fig. 04</span><span class="mono" style="color:var(--ink-60)">Bar &amp; Barber</span></div>
+          <div class="frame">
+            <svg viewBox="0 0 300 150" width="100%" role="img" aria-label="Backroom unit economics">
+              <g font-family="Menlo,monospace" font-size="9" fill="#5b6472">
+                <text x="4" y="38">AVG TICKET</text><text x="4" y="80">UTILIZATION</text><text x="4" y="122">CONTRIB. MGN</text>
+              </g>
+              <g>
+                <rect x="4" y="46" width="292" height="10" fill="#e2ddd0"/><rect x="4" y="46" width="200" height="10" fill="#1d2533"/>
+                <rect x="4" y="88" width="292" height="10" fill="#e2ddd0"/><rect x="4" y="88" width="234" height="10" fill="#1d2533"/>
+                <rect x="4" y="130" width="292" height="10" fill="#e2ddd0"/><rect x="4" y="130" width="150" height="10" fill="#b5382a"/>
+              </g>
+            </svg>
+          </div>
+          <h3>The Backroom Bar &amp; Barber</h3>
+          <p>Dual-revenue model tracking unit economics across bar and barbershop.</p>
+        </div>
+      </div>
+      </div>
+      <div class="folio"><span>№ 02 / 05 — Client work</span><a href="#about">Next — The record ↓</a></div>
+    </div>
+  </section>
+
+  <!-- RECORD -->
+  <section class="record panel" id="about">
+    <div class="wrap">
+      <div class="record-grid sec-body">
+      <div class="record-copy">
+        <span class="mono red">№ 03 — The record</span>
+        <h2 style="margin-top:16px">A decade of FP&amp;A, pointed entirely at your raise.</h2>
+        <p>ModelUp brings big-company financial planning discipline to founder-stage businesses. Every engagement is built around one goal: when an investor asks a question, you already have the answer.</p>
+        <p>Oil &amp; gas, retail, technology, hospitality — in English, Spanish, or French.</p>
+      </div>
+      <div class="tally">
+        <div class="tally-row"><span class="n">10+</span><span class="l">Years FP&amp;A</span></div>
+        <div class="tally-row"><span class="n">4</span><span class="l">Industries served</span></div>
+        <div class="tally-row"><span class="n">3</span><span class="l">Working languages</span></div>
+        <div class="tally-row"><span class="n red">30&thinsp;min</span><span class="l">Free consult, no strings</span></div>
+      </div>
+      </div>
+      <div class="folio"><span>№ 03 / 05 — The record</span><a href="#pricing">Next — Rate card ↓</a></div>
+    </div>
+  </section>
+
+  <!-- RATES -->
+  <section id="pricing" class="panel">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-no">№ 04</span>
+        <h2>Rate card</h2>
+        <span class="aside">Published prices. No discovery-call runaround.</span>
+      </div>
+      <div class="sec-body">
+      <table class="rate">
+        <thead>
+          <tr><th>Engagement</th><th>Rate</th><th>Includes</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tier-name">Base Custom Model</td>
+            <td class="price">$500</td>
+            <td class="inc">Custom inputs · single revenue stream &amp; cost structure · overhead, admin &amp; subscriptions · key financial metrics.</td>
+            <td><a class="rowlink" href="#contact">Inquire</a></td>
+          </tr>
+          <tr>
+            <td class="tier-name">Advanced Custom Model<span class="pop">Most requested</span></td>
+            <td class="price">$800+</td>
+            <td class="inc">Everything in Base · multiple revenue streams &amp; cost structures · scenario planning (base / upside / stress).</td>
+            <td><a class="rowlink" href="#contact">Inquire</a></td>
+          </tr>
+          <tr>
+            <td class="tier-name">Premium Custom Model</td>
+            <td class="price">$1,500+</td>
+            <td class="inc">Everything in Advanced · custom dashboards · business plan presentation · maintenance &amp; advisory support.</td>
+            <td><a class="rowlink" href="#contact">Inquire</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="rate-note">Every engagement opens with a free 30-minute consultation.</p>
+      </div>
+      <div class="folio"><span>№ 04 / 05 — Rate card</span><a href="#contact">Next — Inquiry ↓</a></div>
+    </div>
+  </section>
+
+  <!-- INQUIRY -->
+  <section class="inquiry panel" id="contact">
+    <div class="wrap inq-grid">
+      <div class="inq-copy">
+        <span class="mono" style="color:#8b94a3">№ 05 — Inquiry</span>
+        <h2>Let's look at your numbers together.</h2>
+        <p>A free 30-minute working session. You'll leave with:</p>
+        <ul class="inq-list">
+          <li><span class="tick">→</span> A read on your current financial story</li>
+          <li><span class="tick">→</span> The gaps investors will poke at</li>
+          <li><span class="tick">→</span> A clear recommendation — even if it isn't us</li>
+        </ul>
+      </div>
+      <form action="mailto:ModelUpLLC@gmail.com" method="post" enctype="text/plain">
+        <div class="frow">
+          <div><label for="name">Name</label><input id="name" name="name" required placeholder="Jane Founder"></div>
+          <div><label for="email">Email</label><input id="email" name="email" type="email" required placeholder="jane@company.com"></div>
+        </div>
+        <div class="frow">
+          <div><label for="biz">Business</label><input id="biz" name="business" placeholder="Acme Co."></div>
+          <div>
+            <label for="need">Need</label>
+            <select id="need" name="need">
+              <option>Financial model</option>
+              <option>Fractional CFO / advisory</option>
+              <option>Business plan / pitch</option>
+              <option>Model training</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+        </div>
+        <div><label for="msg">Where's the business today?</label><textarea id="msg" name="message" rows="4" placeholder="Stage, revenue if any, what you're trying to raise or figure out…"></textarea></div>
+        <button class="submit" type="submit">Book my free consult →</button>
+        <p class="inq-fine">Reply within one business day · <a href="mailto:ModelUpLLC@gmail.com">ModelUpLLC@gmail.com</a></p>
+      </form>
+    </div>
+    <footer>
+  <div class="wrap">
+    <span>© 2026 ModelUp LLC</span>
+    <span>Where smart models meet smart money</span>
+    <span><a href="#services">Services</a> &nbsp;·&nbsp; <a href="#pricing">Rates</a> &nbsp;·&nbsp; <a href="mailto:ModelUpLLC@gmail.com">Contact</a></span>
+  </div>
+    </footer>
+  </section>
+</main>
+
+<!-- DEMO SHEET LIGHTBOXES -->
+<dialog class="sheet" id="sheet-neet" aria-label="NEET Sheets demo model">
+  <div class="sheet-head">
+    <span class="t"><b>Fig. 02</b> — NEET Sheets · From the live model</span>
+    <button class="sheet-close" data-close>Close ✕</button>
+  </div>
+  <div class="sheet-body">
+    <figure>
+      <figcaption>Cash flow forecast — gross profit by hotel segment</figcaption>
+      <img src="assets/demo-neet-forecast.jpg" alt="NEET Sheets cash flow forecast spreadsheet" loading="lazy">
+    </figure>
+    <figure>
+      <figcaption>Input assumptions — the dials that drive the forecast</figcaption>
+      <img src="assets/demo-neet-inputs.png" alt="NEET Sheets input assumptions sheet" loading="lazy" style="max-width:520px">
+    </figure>
+    <div class="gate">
+      <p class="gate-label"><b>Take a model for a spin.</b> Enter your email and the demo files unlock.</p>
+      <form>
+        <input type="email" required placeholder="you@company.com" aria-label="Your email">
+        <button type="submit">Unlock the models →</button>
+      </form>
+      <div class="files">
+        <span class="ok">Unlocked —</span>
+        <a href="assets/Base-Model-Example.xlsx" download>Base model example (.xlsx)</a>
+        <a href="assets/Financial-Model_Advanced-Example.xlsx" download>Advanced model example (.xlsx)</a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="sheet-lastnight" aria-label="Last Night demo model">
+  <div class="sheet-head">
+    <span class="t"><b>Fig. 03</b> — Last Night · From the live model</span>
+    <button class="sheet-close" data-close>Close ✕</button>
+  </div>
+  <div class="sheet-body">
+    <figure>
+      <figcaption>Forecast output</figcaption>
+      <img src="assets/demo-lastnight-forecast.png" alt="Last Night forecast spreadsheet" loading="lazy">
+    </figure>
+    <figure>
+      <figcaption>Input assumptions</figcaption>
+      <img src="assets/demo-lastnight-inputs.png" alt="Last Night input assumptions sheet" loading="lazy">
+    </figure>
+    <div class="gate">
+      <p class="gate-label"><b>Take a model for a spin.</b> Enter your email and the demo files unlock.</p>
+      <form>
+        <input type="email" required placeholder="you@company.com" aria-label="Your email">
+        <button type="submit">Unlock the models →</button>
+      </form>
+      <div class="files">
+        <span class="ok">Unlocked —</span>
+        <a href="assets/Base-Model-Example.xlsx" download>Base model example (.xlsx)</a>
+        <a href="assets/Financial-Model_Advanced-Example.xlsx" download>Advanced model example (.xlsx)</a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="sheet-backroom" aria-label="The Backroom demo model">
+  <div class="sheet-head">
+    <span class="t"><b>Fig. 04</b> — The Backroom · From the live model</span>
+    <button class="sheet-close" data-close>Close ✕</button>
+  </div>
+  <div class="sheet-body">
+    <figure>
+      <figcaption>Forecast output</figcaption>
+      <img src="assets/demo-backroom-forecast.png" alt="The Backroom forecast spreadsheet" loading="lazy">
+    </figure>
+    <div class="gate">
+      <p class="gate-label"><b>Take a model for a spin.</b> Enter your email and the demo files unlock.</p>
+      <form>
+        <input type="email" required placeholder="you@company.com" aria-label="Your email">
+        <button type="submit">Unlock the models →</button>
+      </form>
+      <div class="files">
+        <span class="ok">Unlocked —</span>
+        <a href="assets/Base-Model-Example.xlsx" download>Base model example (.xlsx)</a>
+        <a href="assets/Financial-Model_Advanced-Example.xlsx" download>Advanced model example (.xlsx)</a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  document.querySelectorAll('.work[data-sheet]').forEach(card => {
+    const dlg = document.getElementById(card.dataset.sheet);
+    const open = () => dlg.showModal();
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+  });
+  document.querySelectorAll('dialog.sheet').forEach(dlg => {
+    dlg.querySelector('[data-close]').addEventListener('click', () => dlg.close());
+    dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  });
+
+  // Email-gated model downloads.
+  // Set LEAD_ENDPOINT to a Formspree/Basin URL to actually collect the emails.
+  const LEAD_ENDPOINT = '';
+  const unlockAll = () => document.querySelectorAll('.gate').forEach(g => g.classList.add('unlocked'));
+  if (localStorage.getItem('modelup-lead')) unlockAll();
+  document.querySelectorAll('.gate form').forEach(form => {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const email = form.querySelector('input[type=email]').value.trim();
+      if (!form.reportValidity()) return;
+      localStorage.setItem('modelup-lead', email);
+      if (LEAD_ENDPOINT) {
+        fetch(LEAD_ENDPOINT, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+          body: JSON.stringify({email, source: 'demo-model-download'})
+        }).catch(() => {});
+      }
+      unlockAll();
+    });
+  });
+</script>
+
+</body>
+</html>
