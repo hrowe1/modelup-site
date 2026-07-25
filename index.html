@@ -36,8 +36,7 @@
 
   /* full-viewport snap frames */
   .panel{
-    min-height:calc(100svh - 60px);
-    min-height:calc(100dvh - 60px); /* tracks Chrome's collapsing toolbar */
+    min-height:calc(100svh - 60px); /* small viewport: bar's space always reserved; bar hidden = buffer */
     scroll-snap-align:start;
     scroll-snap-stop:always;
     display:flex;flex-direction:column;justify-content:center;
@@ -203,7 +202,7 @@
   /* ---------- LIGHTBOX ---------- */
   dialog.sheet{
     border:1px solid var(--ink);background:var(--paper);color:var(--ink);
-    padding:0;width:min(1060px,92vw);max-height:88svh;max-height:88dvh;
+    padding:0;width:min(1060px,92vw);max-height:88svh;
     margin:auto; /* the global reset kills the UA's centering — restore it */
   }
   dialog.sheet::backdrop{background:rgba(29,37,51,.82)}
@@ -219,7 +218,7 @@
     background:none;border:1px solid var(--ink);color:var(--ink);padding:8px 14px;cursor:pointer;
   }
   .sheet-close:hover{background:var(--red);border-color:var(--red);color:var(--paper)}
-  .sheet-body{padding:20px;overflow-y:auto;max-height:calc(88svh - 64px);max-height:calc(88dvh - 64px)}
+  .sheet-body{padding:20px;overflow-y:auto;max-height:calc(88svh - 64px)}
   .sheet-body figure{margin:0 0 22px}
   .sheet-body figure:last-child{margin-bottom:0}
   .sheet-body figcaption{
@@ -350,7 +349,7 @@
   footer a:hover{color:var(--paper)}
   /* ---------- MOBILE: hard one-screen frames ---------- */
   @media(max-width:700px){
-    .panel{height:calc(100svh - 60px);height:calc(100dvh - 60px);min-height:0;overflow:hidden}
+    .panel{height:calc(100svh - 60px);min-height:0;overflow:hidden}
     section.panel{padding:18px 0}
     .folio{padding-top:10px;font-size:.58rem;letter-spacing:.1em}
 
