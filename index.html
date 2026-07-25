@@ -176,8 +176,13 @@
   }
   .work{cursor:pointer}
   .work:hover .frame{border-color:var(--red)}
-  .work:hover h3::after{color:var(--red)}
-  .work h3::after{content:" +";font-family:var(--mono);font-size:.8em;color:var(--ink-60)}
+  .work .view{
+    display:inline-block;margin-top:12px;
+    font-family:var(--mono);font-size:.7rem;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;
+    border-bottom:2px solid var(--red);padding-bottom:2px;
+  }
+  .work:hover .view{color:var(--red)}
   .work .cap{display:flex;justify-content:space-between;margin-bottom:14px}
 
   /* ---------- LIGHTBOX ---------- */
@@ -573,6 +578,7 @@
           </div>
           <h3>NEET Sheets</h3>
           <p>Multi-channel forecast with assumption-driven inputs for DTC and wholesale.</p>
+          <span class="view">Open the sheets ↗</span>
         </div>
         <div class="work" data-sheet="sheet-lastnight" role="button" tabindex="0" aria-haspopup="dialog">
           <div class="cap"><span class="mono">Fig. 03</span><span class="mono" style="color:var(--ink-60)">Nightlife</span></div>
@@ -588,6 +594,7 @@
           </div>
           <h3>Last Night</h3>
           <p>Scenario planning — base, upside, and stress cases on one dashboard.</p>
+          <span class="view">Open the sheets ↗</span>
         </div>
         <div class="work" data-sheet="sheet-backroom" role="button" tabindex="0" aria-haspopup="dialog">
           <div class="cap"><span class="mono">Fig. 04</span><span class="mono" style="color:var(--ink-60)">Bar &amp; Barber</span></div>
@@ -605,6 +612,7 @@
           </div>
           <h3>The Backroom Bar &amp; Barber</h3>
           <p>Dual-revenue model tracking unit economics across bar and barbershop.</p>
+          <span class="view">Open the sheets ↗</span>
         </div>
       </div>
       </div>
